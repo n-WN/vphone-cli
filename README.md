@@ -32,7 +32,7 @@ Once done, restart the system again.
 
 > Shoutout to [nikias](https://github.com/nikias) for his original all in one script!
 
-The libimobiledevice suite is required to make the whole installation to function. You can run the pre-set up script at `compile_all_libimobiledevice_deps.sh`, which helps you compile all libimobiledevice libraries with vphone support.
+The libimobiledevice suite is required to make the whole installation function. You can run the setup script at `Scripts/compile_all_libimobiledevice_deps.sh`, which clones and builds the upstream libimobiledevice libraries required by this project.
 
 ## Prepare Resource Files
 
