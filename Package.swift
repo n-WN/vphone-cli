@@ -17,8 +17,8 @@ let package = Package(
             path: "sources/vphone-objc",
             publicHeadersPath: "include",
             linkerSettings: [
-                .linkedFramework("Virtualization"),
-            ],
+                .linkedFramework("Virtualization")
+            ]
         ),
         // Swift executable
         .executableTarget(
@@ -29,12 +29,12 @@ let package = Package(
             ],
             path: "sources/vphone-cli",
             swiftSettings: [
-                .unsafeFlags(["-parse-as-library"]),
+                .unsafeFlags(["-parse-as-library"])
             ],
             linkerSettings: [
                 .linkedFramework("Virtualization"),
-                .linkedFramework("AppKit"),
-            ],
-        ),
-    ],
+                .linkedFramework("AppKit")
+            ]
+        )
+    ]
 )

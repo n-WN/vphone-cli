@@ -48,7 +48,7 @@ class VPhoneVM: NSObject, VZVirtualMachineDelegate {
         let auxStorage = try VZMacAuxiliaryStorage(
             creatingStorageAt: options.nvramURL,
             hardwareModel: hwModel,
-            options: .allowOverwrite,
+            options: .allowOverwrite
         )
         platform.auxiliaryStorage = auxStorage
         platform.hardwareModel = hwModel
@@ -76,7 +76,7 @@ class VPhoneVM: NSObject, VZVirtualMachineDelegate {
         // Display (vresearch101: 1290x2796 @ 460 PPI — matches vrevm)
         let gfx = VZMacGraphicsDeviceConfiguration()
         gfx.displays = [
-            VZMacGraphicsDisplayConfiguration(widthInPixels: 1290, heightInPixels: 2796, pixelsPerInch: 460),
+            VZMacGraphicsDisplayConfiguration(widthInPixels: 1290, heightInPixels: 2796, pixelsPerInch: 460)
         ]
         config.graphicsDevices = [gfx]
 
