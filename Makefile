@@ -7,6 +7,7 @@ VM_DIR      ?= vm
 CPU         ?= 4
 MEMORY      ?= 4096
 DISK_SIZE   ?= 64
+SWIFT_BUILD_FLAGS ?=
 
 # ─── Paths ────────────────────────────────────────────────────────
 SCRIPTS     := scripts
@@ -58,6 +59,7 @@ help:
 	@echo "  make cfw_install             Install CFW mods via SSH"
 	@echo ""
 	@echo "Variables: VM_DIR=$(VM_DIR) CPU=$(CPU) MEMORY=$(MEMORY) DISK_SIZE=$(DISK_SIZE)"
+	@echo "           SWIFT_BUILD_FLAGS='$(SWIFT_BUILD_FLAGS)'"
 
 # ═══════════════════════════════════════════════════════════════════
 # Setup
@@ -81,7 +83,7 @@ build: $(BINARY)
 
 $(BINARY): $(SWIFT_SOURCES) Package.swift $(ENTITLEMENTS)
 	@echo "=== Building vphone-cli ==="
-	swift build -c release 2>&1 | tail -5
+	swift build -c release $(SWIFT_BUILD_FLAGS) 2>&1 | tail -5
 	@echo ""
 	@echo "=== Signing with entitlements ==="
 	codesign --force --sign - --entitlements $(ENTITLEMENTS) $@
