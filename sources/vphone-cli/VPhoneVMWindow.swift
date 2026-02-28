@@ -200,6 +200,7 @@ class VPhoneWindowController {
     @MainActor
     func showWindow(for vm: VZVirtualMachine) {
         let vmView: NSView
+        var isDisplayOnly = false
         if #available(macOS 16.0, *) {
             let view = VZVirtualMachineView()
             view.virtualMachine = vm
@@ -209,6 +210,10 @@ class VPhoneWindowController {
             let view = VPhoneVMView()
             view.virtualMachine = vm
             view.capturesSystemKeys = true
+            if (VPhoneGetMultiTouchDevices(vm)?.count ?? 0) == 0 {
+                isDisplayOnly = true
+                print("[vphone] touch injection unavailable — display-only mode")
+            }
             vmView = view
         }
 
@@ -224,7 +229,7 @@ class VPhoneWindowController {
         )
 
         window.contentAspectRatio = windowSize
-        window.title = "vphone"
+        window.title = isDisplayOnly ? "vphone (display-only)" : "vphone"
         window.contentView = vmView
         window.center()
 
