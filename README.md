@@ -124,6 +124,14 @@ AMFI is not disabled. Set the boot-arg and restart:
 sudo nvram boot-args="amfi_get_out_of_my_way=1 -v"
 ```
 
+**Q: I need to pass custom flags to `swift build`.**
+
+Use `SWIFT_BUILD_FLAGS` in make:
+
+```bash
+make build SWIFT_BUILD_FLAGS='-Xswiftc -warnings-as-errors'
+```
+
 **Q: Can I update to a newer iOS version?**
 
 Yes. Override `fw_prepare` with the IPSW URL for the version you want:
