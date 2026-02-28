@@ -32,6 +32,7 @@ SSH_PORT=2222
 SSH_PASS="alpine"
 SSH_USER="root"
 SSH_HOST="localhost"
+USE_HOST_SUDO="${VPHONE_HOST_SUDO:-0}"
 SSH_OPTS=(
     -o StrictHostKeyChecking=no
     -o UserKnownHostsFile=/dev/null
@@ -42,6 +43,14 @@ SSH_OPTS=(
 
 # ── Helpers ─────────────────────────────────────────────────────
 die() { echo "[-] $*" >&2; exit 1; }
+
+run_host() {
+    if [[ "$USE_HOST_SUDO" == "1" ]]; then
+        sudo "$@"
+    else
+        "$@"
+    fi
+}
 
 _sshpass() {
     "$VM_DIR/$CFW_INPUT/tools/sshpass" -p "$SSH_PASS" "$@"
@@ -74,7 +83,7 @@ ldid_sign() {
 safe_detach() {
     local mnt="$1"
     if mount | grep -q "$mnt"; then
-        sudo hdiutil detach -force "$mnt" 2>/dev/null || true
+        run_host hdiutil detach -force "$mnt" 2>/dev/null || true
     fi
 }
 
@@ -181,9 +190,9 @@ safe_detach "$MNT_APPOS"
 mkdir -p "$MNT_SYSOS" "$MNT_APPOS"
 
 echo "  Mounting SystemOS..."
-sudo hdiutil attach -mountpoint "$MNT_SYSOS" "$SYSOS_DMG" -owners off
+run_host hdiutil attach -mountpoint "$MNT_SYSOS" "$SYSOS_DMG" -owners off
 echo "  Mounting AppOS..."
-sudo hdiutil attach -mountpoint "$MNT_APPOS" "$APPOS_DMG" -owners off
+run_host hdiutil attach -mountpoint "$MNT_APPOS" "$APPOS_DMG" -owners off
 
 # Mount device rootfs (tolerate already-mounted)
 echo "  Mounting device rootfs rw..."
@@ -371,4 +380,3 @@ echo "    Reboot the device for changes to take effect."
 echo "    After boot, SSH will be available on port 22222 (password: alpine)"
 
 ssh_cmd "/sbin/halt" || true
-

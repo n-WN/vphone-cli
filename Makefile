@@ -42,6 +42,8 @@ help:
 	@echo "  make vm_new                  Create VM directory"
 	@echo "  make boot                    Boot VM (headless)"
 	@echo "  make boot_dfu                Boot VM in DFU mode"
+	@echo "  make boot_gui                Boot VM (windowed GUI)"
+	@echo "  make boot_dfu_gui            Boot VM in DFU mode (GUI)"
 	@echo ""
 	@echo "Firmware pipeline:"
 	@echo "  make fw_prepare              Download IPSWs, extract, merge"
@@ -102,7 +104,7 @@ clean:
 # VM management
 # ═══════════════════════════════════════════════════════════════════
 
-.PHONY: vm_new boot boot_dfu
+.PHONY: vm_new boot boot_dfu boot_gui boot_dfu_gui
 
 vm_new:
 	zsh $(SCRIPTS)/vm_create.sh --dir $(VM_DIR) --disk-size $(DISK_SIZE)
@@ -130,6 +132,29 @@ boot_dfu: build
 		--sep-rom ./AVPSEPBooter.vresearch1.bin \
 		--sep-storage ./SEPStorage \
 		--no-graphics --dfu
+
+boot_gui: build
+	cd $(VM_DIR) && "$(CURDIR)/$(BINARY)" \
+		--rom ./AVPBooter.vresearch1.bin \
+		--disk ./Disk.img \
+		--nvram ./nvram.bin \
+		--cpu $(CPU) --memory $(MEMORY) \
+		--serial-log ./serial.log \
+		--stop-on-panic --stop-on-fatal-error \
+		--sep-rom ./AVPSEPBooter.vresearch1.bin \
+		--sep-storage ./SEPStorage
+
+boot_dfu_gui: build
+	cd $(VM_DIR) && "$(CURDIR)/$(BINARY)" \
+		--rom ./AVPBooter.vresearch1.bin \
+		--disk ./Disk.img \
+		--nvram ./nvram.bin \
+		--cpu $(CPU) --memory $(MEMORY) \
+		--serial-log ./serial.log \
+		--stop-on-panic --stop-on-fatal-error \
+		--sep-rom ./AVPSEPBooter.vresearch1.bin \
+		--sep-storage ./SEPStorage \
+		--dfu
 
 # ═══════════════════════════════════════════════════════════════════
 # Firmware pipeline

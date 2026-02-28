@@ -102,6 +102,7 @@ SIGN_DIRS = [
 
 # Compressed archive of ramdisk_input/ (located next to this script)
 INPUT_ARCHIVE = "ramdisk_input.tar.zst"
+USE_HOST_SUDO = os.environ.get("VPHONE_HOST_SUDO", "0") == "1"
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -183,6 +184,13 @@ def run(cmd, **kwargs):
     return subprocess.run(cmd, check=True, **kwargs)
 
 
+def host_cmd(*args):
+    """Host-side command wrapper; enable sudo only when requested."""
+    if USE_HOST_SUDO:
+        return ["sudo", *args]
+    return list(args)
+
+
 # ══════════════════════════════════════════════════════════════════
 # Firmware extraction and IM4P creation
 # ══════════════════════════════════════════════════════════════════
@@ -262,27 +270,27 @@ def build_ramdisk(restore_dir, im4m_path, vm_dir, input_dir, output_dir, temp_di
     try:
         # Mount, create expanded copy
         print("  Mounting base ramdisk...")
-        run(["sudo", "hdiutil", "attach", "-mountpoint", mountpoint,
-             ramdisk_raw, "-owners", "off"])
+        run(host_cmd("hdiutil", "attach", "-mountpoint", mountpoint,
+                     ramdisk_raw, "-owners", "off"))
 
         print("  Creating expanded ramdisk (254 MB)...")
-        run(["sudo", "hdiutil", "create", "-size", "254m",
-             "-imagekey", "diskimage-class=CRawDiskImage",
-             "-format", "UDZO", "-fs", "APFS", "-layout", "NONE",
-             "-srcfolder", mountpoint, "-copyuid", "root",
-             ramdisk_custom])
-        run(["sudo", "hdiutil", "detach", "-force", mountpoint])
+        run(host_cmd("hdiutil", "create", "-size", "254m",
+                     "-imagekey", "diskimage-class=CRawDiskImage",
+                     "-format", "UDZO", "-fs", "APFS", "-layout", "NONE",
+                     "-srcfolder", mountpoint, "-copyuid", "root",
+                     ramdisk_custom))
+        run(host_cmd("hdiutil", "detach", "-force", mountpoint))
 
         # Mount expanded, inject SSH
         print("  Mounting expanded ramdisk...")
-        run(["sudo", "hdiutil", "attach", "-mountpoint", mountpoint,
-             ramdisk_custom, "-owners", "off"])
+        run(host_cmd("hdiutil", "attach", "-mountpoint", mountpoint,
+                     ramdisk_custom, "-owners", "off"))
 
         print("  Injecting SSH tools...")
         gtar = os.path.join(input_dir, "tools/gtar")
         ssh_tar = os.path.join(input_dir, "ssh.tar.gz")
-        run(["sudo", gtar, "-x", "--no-overwrite-dir",
-             "-f", ssh_tar, "-C", mountpoint])
+        run(host_cmd(gtar, "-x", "--no-overwrite-dir",
+                     "-f", ssh_tar, "-C", mountpoint))
 
         # Remove unnecessary files
         for rel_path in RAMDISK_REMOVE:
@@ -324,11 +332,11 @@ def build_ramdisk(restore_dir, im4m_path, vm_dir, input_dir, output_dir, temp_di
         print(f"  [+] trustcache.img4")
 
     finally:
-        subprocess.run(["sudo", "hdiutil", "detach", "-force", mountpoint],
+        subprocess.run(host_cmd("hdiutil", "detach", "-force", mountpoint),
                        capture_output=True)
 
     # Shrink and sign ramdisk
-    run(["sudo", "hdiutil", "resize", "-sectors", "min", ramdisk_custom])
+    run(host_cmd("hdiutil", "resize", "-sectors", "min", ramdisk_custom))
 
     print("  Signing ramdisk...")
     rd_im4p = os.path.join(temp_dir, "ramdisk.im4p")

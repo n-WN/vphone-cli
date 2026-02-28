@@ -12,6 +12,8 @@ Boot a virtual iPhone (iOS 26) via Apple's Virtualization.framework using PCC re
 | 2 | macOS 26.3 (Tahoe, Build 25D125) | MacBook Air, Apple M4 | `iPhone17,3_26.3_23D127_Restore.ipsw` | `PCC-CloudOS-26.1-23B85.ipsw` |
 | 3 | macOS 15.7.4 (Sequoia, Build 24G517) | MacBook Pro, Apple M1Pro | `iPhone17,3_26.3_23D127_Restore.ipsw` | `PCC-CloudOS-26.1-23B85.ipsw` |
 
+macOS 15 uses the same build/boot pipeline in this README (no separate patch flow required).
+
 ## Prerequisites
 
 **Disable SIP and AMFI** — required for private Virtualization.framework entitlements.
